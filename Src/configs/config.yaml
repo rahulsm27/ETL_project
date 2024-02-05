@@ -1,0 +1,2 @@
+dvc :
+  dvc_remote_name : gcs_storage
