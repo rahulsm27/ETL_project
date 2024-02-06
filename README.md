@@ -10,7 +10,7 @@ Dataset url -> (https://www.kaggle.com/datasets/thoughtvector/customer-support-o
 
 3. If you dont have kaggle api key download data and keep 'twcs.csv' file  in /data/twcs/ folder . The data folder should be in the same direcotory where this readme file is present . System will skip the download process. Data link given above
 
-4. Run command python src/pre_process.py 
+4. Run command python src/pre_process.py  from the directory containing this file
 
 5. Have used hydra for configuration management, logger for logging each step and exception handling to catch errors in case there is any 
 

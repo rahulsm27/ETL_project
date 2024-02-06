@@ -139,7 +139,7 @@ def main(config : DictConfig,)-> None:
  # Step 10 Storing Processed dataframe
     try:
         logger.info("--------Initiate :  Saving Processed dataframe --------")
-        data_cleaners.save_processed_df(df, config.pre_process.processed_file_name, config.pre_process.text_column)
+        data_cleaners.save_processed_df(df, config.pre_process.processed_file_name, config.pre_process.dir config.pre_process.text_column)
     except Exception as e:
         raise(e)
     else:

@@ -14,6 +14,7 @@ from textblob import TextBlob
 from utils.logger import get_logger
 from pathlib import Path
 
+nltk.download('stopwords')
 
 logger = get_logger(Path(__file__).name)
 
@@ -41,7 +42,7 @@ def download_kaggle(download_api:str, zip_filename:str, dir:str) -> None:
         raise(e)
 
 # Step 2
-def initialize_dd(file_path:str) -> dd.core.dataframe:
+def initialize_dd(file_path:str) -> dd.core.DataFrame:
     try:
         logger.info(f"Initialziing data frame from {file_path} ")
         df = dd.read_csv(file_path)
@@ -53,7 +54,7 @@ def initialize_dd(file_path:str) -> dd.core.dataframe:
         raise(e)
 
 # Step 3    
-def lower_dd(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
+def lower_dd(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
     try:
         logger.info(f" Applying lower case function to the dask dataframe")
         df[column] = df[column].apply(lambda text : text.lower())
@@ -73,10 +74,10 @@ def lower_dd(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
 
 # Step 4
 
-def rem_punc(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
+def rem_punc(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
     try:
         logger.info(f" Removing punctuations from the dask dataframe")
-        df[column] = df[column].apply(lambda x:x.translate(string.maketrans("",""), string.punctuation))
+        df[column] = df[column].apply(lambda x:x.translate(str.maketrans("","", string.punctuation)))
         return df
     except Exception as e:
 
@@ -85,7 +86,7 @@ def rem_punc(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
         raise(e)
     
 # Step 5
-def rem_url(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
+def rem_url(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
     try:
         logger.info(f"Removing html and url tags from the word ")
        
@@ -106,9 +107,10 @@ def url_clean(text):
     return text
 
 #Step 6
-def rem_stop_words(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
+def rem_stop_words(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
     try:
         logger.info(f"Removing stop words ")
+        
         df[column] = df[column].apply(filter_stop_words)
         return df
     except Exception as e:
@@ -118,6 +120,7 @@ def rem_stop_words(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
         raise(e)
     
 def filter_stop_words(text):
+    
     stop_words = set(stopwords.words('english'))
     filtered_sent = []
     for w in text:
@@ -128,7 +131,7 @@ def filter_stop_words(text):
              
 
 # Step 7
-def rem_emojis(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
+def rem_emojis(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
     try:
         logger.info(f"Remvoing emojis ")
         df[column] = df[column].apply(remove_emoji)
@@ -144,7 +147,7 @@ def remove_emoji(text):
     return clean_text
 
 # Step 8
-# def rem_abbrev(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
+# def rem_abbrev(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
 #     try:
 #         logger.info(f" ")
 #         df[column] = df[column].apply()
@@ -157,10 +160,10 @@ def remove_emoji(text):
 #         raise(e)
     
 # Step 9
-def spell(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
+def spell(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
     try:
         logger.info(f" Correcting mis-spelled words ")
-        df[column] = df[column].apply(lambda x : TextBlob(x.correct().string))
+        df[column] = df[column].apply(lambda x : TextBlob(x).correct().string)
         return df
     except Exception as e:
 
@@ -169,11 +172,11 @@ def spell(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
         raise(e)
     
 # Step 10
-def save_processed_df(df:dd.core.dataframe,dir:str, processed_file_name:str,column :str) -> None :
+def save_processed_df(df:dd.core.DataFrame,dir:str, processed_file_name:str,column :str) -> None :
     try:
         logger.info(f"Printing first 20 records of processed data")
         print(df[column].head(20))
-        logger.info(f"Saving dataframe @ {dir} ")
+        logger.info(f"Saving DataFrame @ {dir} ")
         file_name = os.path.join(dir, processed_file_name)
         df.to_csv(file_name)
     except Exception as e:
