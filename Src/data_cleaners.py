@@ -16,7 +16,7 @@ from pathlib import Path
 
 nltk.download('stopwords')
 dask.config.set({'logging.distributed': 'error'})
-
+stop_words = set(stopwords.words('english'))
 
 from symspellpy import SymSpell, Verbosity
 import pkg_resources
