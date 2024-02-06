@@ -1,4 +1,8 @@
 pre_process :
+  dask_cluster :
+    available: False
+    n_workers : 2
+    memory : 1GiB
   download_api : kaggle datasets download -d thoughtvector/customer-support-on-twitter
   zip_filename : customer-support-on-twitter.zip
   dir : ./data

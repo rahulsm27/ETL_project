@@ -5,9 +5,10 @@ from pathlib import Path
 import data_cleaners
 import os
 
+from dask.distributed import LocalCluster
 
 @hydra.main(config_path = "configs", config_name ='config',version_base = None)
-def main(config : DictConfig)-> None:
+def main(config : DictConfig,)-> None:
     # print(OmegaConf.to_yaml(config))
     # print(config.pre_process.file_data_path)
    
@@ -15,7 +16,15 @@ def main(config : DictConfig)-> None:
     # Intializing logger
     logger = get_logger(Path(__file__).name)
 
-
+    # use dask cluster if availabe
+    if config.pre_process.dask_cluster.available:
+        try :
+            logger.info(" -----Initiate Dask Cluster -----")
+            cluster = LocalCluster(n_workers=config.pre_process.dask_cluster.n_workers,memory_limit=config.pre_process.dask_cluster.memory_limit)            
+            client = cluster.get_client()
+        except Exception as e:
+            logger.info(f"------- Error in connectiong to dask Cluster-----")
+            raise(e)
 
     # Step 1: Downloading data frame
     try:
