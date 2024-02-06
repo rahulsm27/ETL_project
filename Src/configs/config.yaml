@@ -1,6 +1,9 @@
 pre_process :
-  download_url : gcs_storage
-  file_data_path: ./data/twcs.csv
+  download_api : kaggle datasets download -d thoughtvector/customer-support-on-twitter
+  zip_filename : customer-support-on-twitter.zip
+  dir : ./data
+  file_data_path: ./data/twcs/twcs.csv
+  text_column : text
 
 
 defaults:  
