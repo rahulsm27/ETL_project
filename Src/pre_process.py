@@ -29,7 +29,8 @@ def main(config : DictConfig,)-> None:
             logger.error(f"------- Error : Dask cluster not initialized -----")
             raise(e)
         else:
-            logger.error(f"------- Success : Dask cluster initialized successfully-----")
+            logger.info(f"------- Success : Dask cluster initialized successfully-----")
+            logger.info ("---------------------------------------------------------")
 
 
     # Step 1: Downloading data frame
@@ -52,7 +53,6 @@ def main(config : DictConfig,)-> None:
         logger.info("--------Initiate : Initializing Dataframe --------")
         df = data_cleaners.initialize_dd(config.pre_process.file_data_path)
     except Exception as e:
-
         raise(e)
     else:
         logger.info ("-------- Success : DataFrame initialzied  --------")
@@ -74,8 +74,78 @@ def main(config : DictConfig,)-> None:
         logger.info ("---------------------------------------------------------")
 
 
-    
+    # Step 4 Removing Special characters & Punctuation
+        
+    try:
+        logger.info("--------Initiate : Removing Special characters & Punctuation --------")
+        df = data_cleaners.rem_punc(df,config.pre_process.text_column)
+    except Exception as e:
+        raise(e)
+    else:
+        logger.info ("-------- Success : Removed Special characters & Punctuation --------")
+        logger.info ("---------------------------------------------------------")
+        
+    # Step 5 Removing url tags
+    try:
+        logger.info("--------Initiate : Removing url tags --------")
+        df = data_cleaners.rem_url(df,config.pre_process.text_column)
+    except Exception as e:
+        raise(e)
+    else:
+        logger.info ("-------- Success : Removed url tags --------")
+        logger.info ("---------------------------------------------------------")
+                
 
+    # Step 6 Removing stop words
+    try:
+        logger.info("--------Initiate : Removing stop words  --------")
+        df = data_cleaners.rem_stop_words(df,config.pre_process.text_column)
+    except Exception as e:
+        raise(e)
+    else:
+        logger.info ("-------- Success : Removed stop words --------")
+        logger.info ("---------------------------------------------------------")
+                
+    # Step 7 Removing emojis
+    try:
+        logger.info("--------Initiate : Removing emojis --------")
+        df = data_cleaners.rem_emojis(df,config.pre_process.text_column)
+    except Exception as e:
+        raise(e)
+    else:
+        logger.info ("-------- Success : Removed emojis --------")
+        logger.info ("---------------------------------------------------------")
+        
+    # Step 8 Checking for abbreviations
+    try:
+        logger.info("--------Initiate : Checking for abbreviations  --------")
+        df = data_cleaners.rem_abbrev(df,config.pre_process.text_column)
+    except Exception as e:
+        raise(e)
+    else:
+        logger.info ("-------- Success : Corrected abbreviations --------")
+        logger.info ("---------------------------------------------------------")
+        
+    # Step 9 Correcting spelling mistake
+    try:
+        logger.info("--------Initiate :  Correcting spelling mistake --------")
+        df = data_cleaners.spell(df,config.pre_process.text_column)
+    except Exception as e:
+        raise(e)
+    else:
+        logger.info ("-------- Success : Corrected spelling mistake --------")
+        logger.info ("---------------------------------------------------------")
+
+ # Step 10 Storing Processed dataframe
+    try:
+        logger.info("--------Initiate :  Saving Processed dataframe --------")
+        df = data_cleaners.save_processed_df(df,config.pre_process.text_column)
+    except Exception as e:
+        raise(e)
+    else:
+        logger.info ("-------- Success : Saved Processed dataframe --------")
+        logger.info ("---------------------------------------------------------")
+        
 
 if __name__ == "__main__":
     main()
