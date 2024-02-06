@@ -1,0 +1,44 @@
+One-Hot Encoding:
+Advantages:
+
+    Simple Representation: It's straightforward to understand and implement.
+    
+    Independence: Each word in the vocabulary is represented independently, which can be useful in certain scenarios.
+    
+Disadvantages:
+
+    High Dimensionality: One-hot encoding creates a very high-dimensional sparse matrix,
+    
+    Lack of Semantic Information: It doesn't capture any semantic relationships between words
+
+    Computationaly expensive
+
+
+Bag of Words (BoW) and n-grams:
+Advantages:
+
+    Contextual Information: BoW with n-grams captures some contextual information by considering sequences of words rather than just individual words.
+    
+    Simple and Intuitive: Like one-hot encoding, it's easy to understand and implement.
+    
+    Variable Size Representation: It can handle variable-length documents by adjusting the size of the feature vector based on the vocabulary and the chosen n-grams.
+
+Disadvantages:
+
+    Sparsity: It suffers from the same sparsity issue as one-hot encoding, leading to high-dimensional and sparse representations.
+
+    Loss of Word Order: Does not take word order into account
+
+TF-IDF (Term Frequency-Inverse Document Frequency):
+
+Advantages:
+
+    Term Importance: TF-IDF assigns weights to terms based on their importance in a document relative to a corpus, allowing for a more nuanced representation compared to simple frequency counts.
+    
+    Reduced Impact of Stopwords: TF-IDF reduces the impact of common words (stopwords) by assigning them lower weights, focusing more on discriminative terms.
+  
+Disadvantages:
+
+    Difficulty in Capturing Context: Like BoW, TF-IDF doesn't consider the sequence of words, potentially missing out on important contextual information.
+    
+    Sensitive to Document Length: Longer documents may have higher overall term frequencies, which can bias the importance scores. This can be mitigated by normalizing by document length.

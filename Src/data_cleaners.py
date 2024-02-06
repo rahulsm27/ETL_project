@@ -7,7 +7,7 @@ import string
 import nltk
 import re
 import emoji
-
+import pandas as pd
 from nltk.corpus import stopwords
 from textblob import TextBlob
 
@@ -15,6 +15,18 @@ from utils.logger import get_logger
 from pathlib import Path
 
 nltk.download('stopwords')
+
+
+from symspellpy import SymSpell, Verbosity
+import pkg_resources
+# load a dictionary (this one consists of 82,765 English words)
+sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
+dictionary_path = pkg_resources.resource_filename(
+    "symspellpy", "frequency_dictionary_en_82_765.txt"
+)
+
+sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
+
 
 logger = get_logger(Path(__file__).name)
 
@@ -46,6 +58,7 @@ def initialize_dd(file_path:str) -> dd.core.DataFrame:
     try:
         logger.info(f"Initialziing data frame from {file_path} ")
         df = dd.read_csv(file_path)
+       # df = df.repartition(npartitions = 2)
         return df
     except Exception as e:
 
@@ -57,11 +70,11 @@ def initialize_dd(file_path:str) -> dd.core.DataFrame:
 def lower_dd(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
     try:
         logger.info(f" Applying lower case function to the dask dataframe")
-        df[column] = df[column].apply(lambda text : text.lower())
+        df[column] = df[column].apply(lambda text : text.lower(), meta=pd.Series(dtype=str))
 
-        print(df[column].head(10))
+        df.compute()  
         
-        return df
+       # return df
     except Exception as e:
 
         logger.error("--------Error :  Error in Applying lower case function to the Dataframe------")
@@ -77,8 +90,9 @@ def lower_dd(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
 def rem_punc(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
     try:
         logger.info(f" Removing punctuations from the dask dataframe")
-        df[column] = df[column].apply(lambda x:x.translate(str.maketrans("","", string.punctuation)))
-        return df
+        df[column] = df[column].apply(lambda x:x.translate(str.maketrans("","", string.punctuation)),meta=pd.Series(dtype=str))
+        df.compute()  
+    #    return df
     except Exception as e:
 
         logger.error("--------Error :  Error in removing punctuation ------")
@@ -90,8 +104,9 @@ def rem_url(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
     try:
         logger.info(f"Removing html and url tags from the word ")
        
-        df[column] = df[column].apply(url_clean)
-        return df
+        df[column] = df[column].apply(url_clean,meta=pd.Series(dtype=str))
+        df.compute()
+      #  return df
     except Exception as e:
 
         logger.error("--------Error : Error in removing html and url tags  ------")
@@ -101,8 +116,8 @@ def rem_url(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
 def url_clean(text):
     pattern1 =re.compile(r'https?://\S+|www\.\S+')
     pattern2 = re.compile("<.*>")
-    pattern1.sub("",text)
-    pattern2.sub("",text)
+    text = pattern1.sub("",text)
+    text = pattern2.sub("",text)
 
     return text
 
@@ -111,8 +126,9 @@ def rem_stop_words(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
     try:
         logger.info(f"Removing stop words ")
         
-        df[column] = df[column].apply(filter_stop_words)
-        return df
+        df[column]= df[column].apply(filter_stop_words,meta=pd.Series(dtype=str))
+        df.compute()
+      #  return df
     except Exception as e:
 
         logger.error("--------Error : Error in removing stop words ------")
@@ -120,31 +136,33 @@ def rem_stop_words(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
         raise(e)
     
 def filter_stop_words(text):
-    
-    stop_words = set(stopwords.words('english'))
-    filtered_sent = []
-    for w in text:
-        if w not in stop_words:
-            filtered_sent.append(w)
+   
+    pattern = re.compile(r'\b(' + r'|'.join(stopwords.words('english')) + r')\b\s*')
+    text = pattern.sub('', text)
+    # stop_words = set(stopwords.words('english'))
+    # filtered_sent = []
+    # for w in text:
+    #     if w not in stop_words:
+    #         filtered_sent.append(w)
 
-    return " ".join(filtered_sent)
+    return text
              
 
 # Step 7
 def rem_emojis(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
     try:
         logger.info(f"Remvoing emojis ")
-        df[column] = df[column].apply(remove_emoji)
-        return df
+        df[column] = df[column].apply(lambda x : emoji.demojize(x),meta=pd.Series(dtype=str))
+        df.compute()
+      #  return df
     except Exception as e:
 
         logger.error("--------Error :  Error in removing emojis ------")
         logger.error(f"{e}")
         raise(e)
     
-def remove_emoji(text):
-    clean_text=emoji.demojize(text)
-    return clean_text
+
+ 
 
 # Step 8
 # def rem_abbrev(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
@@ -163,8 +181,9 @@ def remove_emoji(text):
 def spell(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
     try:
         logger.info(f" Correcting mis-spelled words ")
-        df[column] = df[column].apply(lambda x : TextBlob(x).correct().string)
-        return df
+        df[column] = df[column].apply(lambda x : sym_spell.word_segmentation(x).corrected_string,meta=pd.Series(dtype=str))
+        df.compute()
+      #  return df
     except Exception as e:
 
         logger.error("--------Error :  Error in spell correction ------")
@@ -172,13 +191,13 @@ def spell(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
         raise(e)
     
 # Step 10
-def save_processed_df(df:dd.core.DataFrame,dir:str, processed_file_name:str,column :str) -> None :
+def save_processed_df(df:dd.core.DataFrame, processed_file_name:str,dir:str,column :str) -> None :
     try:
-        logger.info(f"Printing first 20 records of processed data")
-        print(df[column].head(20))
-        logger.info(f"Saving DataFrame @ {dir} ")
+        logger.info(f"Printing first 10 records of processed data")
+        print(df[column].head(10))
+        logger.info(f"Saving DataFrame @ {dir}/{processed_file_name} ")
         file_name = os.path.join(dir, processed_file_name)
-        df.to_csv(file_name)
+        df.to_parquet(file_name)
     except Exception as e:
 
         logger.error("--------Error : Dataframe could not be saved  ------")

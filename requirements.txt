@@ -5,4 +5,5 @@ hydra-core
 nltk
 emoji
 textblob
-pyarrow
+pyarrow==14.0.1
+symspellpy
