@@ -16,15 +16,21 @@ def main(config : DictConfig,)-> None:
     # Intializing logger
     logger = get_logger(Path(__file__).name)
 
-    # use dask cluster if availabe
+    # use dask cluster if availabe (Optional and by default not used)
     if config.pre_process.dask_cluster.available:
         try :
-            logger.info(" -----Initiate Dask Cluster -----")
+            logger.info(" -----Initiate : Dask Cluster -----")
             cluster = LocalCluster(n_workers=config.pre_process.dask_cluster.n_workers,memory_limit=config.pre_process.dask_cluster.memory_limit)            
             client = cluster.get_client()
+            print (cluster.dashboard_link)
+            logger.info(f"{cluster.dashboard_link=}")
+           
         except Exception as e:
-            logger.info(f"------- Error in connectiong to dask Cluster-----")
+            logger.error(f"------- Error : Dask cluster not initialized -----")
             raise(e)
+        else:
+            logger.error(f"------- Success : Dask cluster initialized successfully-----")
+
 
     # Step 1: Downloading data frame
     try:
