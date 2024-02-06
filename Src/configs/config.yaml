@@ -1,2 +1,17 @@
-dvc :
-  dvc_remote_name : gcs_storage
+pre_process :
+  download_url : gcs_storage
+  file_data_path: ./data/twcs.csv
+
+
+defaults:  
+  - override hydra/job_logging: None
+  - override hydra/hydra_logging: None
+
+
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+

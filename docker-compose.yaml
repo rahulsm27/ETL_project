@@ -1,0 +1,33 @@
+#to start docker deamon
+#open -a Docker
+
+version: '3.11'
+#sudo docker-compose build
+
+services:
+  app:
+    user: "${USER_ID:-1000}"   # environment variable uid
+    hostname: "${HOST:-Rahul}" # hostname of the container
+    image: data-preprocessing   # image to be called
+    container_name : data-preprocessing-container
+
+    build:
+      context : .
+      dockerfile : ./Dockerfile # where is the docker file
+      # below args to be pased in docerfile check docer file
+      args:
+        USER_NAME : "${USER_NAME:-rahulsm.27}"
+        USER_ID : "${USER_ID:-1000}"
+
+   # env_file:
+    #  - .envs/.app
+
+    volumes : # during project building we are going to mount our project directory to docker container so that changes done in project is avialable in docker
+      - ./:/app/
+      
+    ports :
+      - 8888:8888
+
+
+    ipc : host
+    init : true

@@ -1,2 +1,4 @@
 dask
-dask distributed
+pandas
+numpy
+hydra-core
