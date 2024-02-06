@@ -2,3 +2,4 @@ dask
 pandas
 numpy
 hydra-core
+nltk

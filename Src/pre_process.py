@@ -16,7 +16,7 @@ def main(config : DictConfig,)-> None:
     # Intializing logger
     logger = get_logger(Path(__file__).name)
 
-    # use dask cluster if availabe (Optional and by default not used)
+    # use dask cluster if availabe (Optional. Default is false)
     if config.pre_process.dask_cluster.available:
         try :
             logger.info(" -----Initiate : Dask Cluster -----")
@@ -139,7 +139,7 @@ def main(config : DictConfig,)-> None:
  # Step 10 Storing Processed dataframe
     try:
         logger.info("--------Initiate :  Saving Processed dataframe --------")
-        df = data_cleaners.save_processed_df(df,config.pre_process.text_column)
+        data_cleaners.save_processed_df(df, config.pre_process.processed_file_name, config.pre_process.text_column)
     except Exception as e:
         raise(e)
     else:

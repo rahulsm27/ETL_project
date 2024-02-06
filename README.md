@@ -26,6 +26,8 @@ Dataset url -> (https://www.kaggle.com/datasets/thoughtvector/customer-support-o
 
 10. The configs folder contains the config.yaml which contains the configuration paramters utilized through hyrda module in pre_process.py file
 
+11. Final processed file is aved in data folder as per the name given in config.yaml file
+
 # Docker commands
 1. Pull base image(to be used if image not available) : docker pull python:3.10-slim # if image not available
 2. Build docker service : docker-compose build app

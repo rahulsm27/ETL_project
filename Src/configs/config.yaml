@@ -8,6 +8,7 @@ pre_process :
   dir : ./data
   file_data_path: ./data/twcs/twcs.csv
   text_column : text
+  processed_file_name : processed.csv
 
 
 defaults:  

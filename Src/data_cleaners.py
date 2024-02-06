@@ -3,6 +3,9 @@ import dask.dataframe as dd
 import subprocess
 import zipfile
 import os
+import string
+import nltk
+from nltk.corpus import stopwords
 
 from utils.logger import get_logger
 from pathlib import Path
@@ -49,17 +52,17 @@ def initialize_dd(file_path:str) -> dd.core.dataframe:
 def lower_dd(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
     try:
         logger.info(f" Applying lower case function to the dask dataframe")
-        df[column] = df[column].apply(lower)
+        df[column] = df[column].apply(lambda text : text.lower())
+
+        print(df[column].head(10))
+        
         return df
     except Exception as e:
 
         logger.error("--------Error :  Error in Applying lower case function to the Dataframe------")
         logger.error(f"{e}")
         raise(e)
-    
 
-def lower(text):
-    return text.lower()
 
 
 
@@ -68,19 +71,19 @@ def lower(text):
 
 def rem_punc(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
     try:
-        logger.info(f" Removing punctuations case function to the dask dataframe")
-        df[column] = df[column].apply(lower)
+        logger.info(f" Removing punctuations from the dask dataframe")
+        df[column] = df[column].apply(out = s.translate(string.maketrans("",""), string.punctuation))
         return df
     except Exception as e:
 
-        logger.error("--------Error :  Error in Applying lower case function to the Dataframe------")
+        logger.error("--------Error :  Error in removing punctuation ------")
         logger.error(f"{e}")
         raise(e)
     
 # Step 5
 def rem_url(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
     try:
-        logger.info(f" ")
+        logger.info(f"Remv ")
         df[column] = df[column].apply()
         return df
     except Exception as e:
@@ -92,25 +95,34 @@ def rem_url(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
 #Step 6
 def rem_stop_words(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
     try:
-        logger.info(f" ")
-        df[column] = df[column].apply()
+        logger.info(f"Removing stop words ")
+        df[column] = df[column].apply(filter_stop_words)
         return df
     except Exception as e:
 
-        logger.error("--------Error :  ------")
+        logger.error("--------Error : Error in removing stop words ------")
         logger.error(f"{e}")
         raise(e)
     
+def filter_stop_words(text):
+    stop_words = set(stopwords.words('english'))
+    filtered_sent = []
+    for w in text:
+        if w not in stop_words:
+            filtered_sent.append(w)
+
+    return " ".join(filtered_sent)
+             
 
 # Step 7
 def rem_emojis(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
     try:
-        logger.info(f" ")
+        logger.info(f"Remvoing emojis ")
         df[column] = df[column].apply()
         return df
     except Exception as e:
 
-        logger.error("--------Error :  ------")
+        logger.error("--------Error :  Error in removing emojis ------")
         logger.error(f"{e}")
         raise(e)
     
@@ -120,6 +132,7 @@ def rem_abbrev(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
     try:
         logger.info(f" ")
         df[column] = df[column].apply()
+
         return df
     except Exception as e:
 
@@ -130,83 +143,26 @@ def rem_abbrev(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
 # Step 9
 def spell(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
     try:
-        logger.info(f" ")
+        logger.info(f" Correcting mis-spelled words ")
         df[column] = df[column].apply()
         return df
     except Exception as e:
 
-        logger.error("--------Error :  ------")
+        logger.error("--------Error :  Error in spell correction ------")
         logger.error(f"{e}")
         raise(e)
     
 # Step 10
-def save_processed_df(df:dd.core.dataframe, column : str ) -> None :
+def save_processed_df(df:dd.core.dataframe,dir:str, processed_file_name:str,column :str) -> None :
     try:
-        logger.info(f" ")
-        df[column] = df[column].apply()
-       
+        logger.info(f"Printing first 20 records of processed data")
+        print(df[column].head(20))
+        logger.info(f"Saving dataframe @ {dir} ")
+        file_name = os.path.join(dir, processed_file_name)
+        df.to_csv(file_name)
     except Exception as e:
 
-        logger.error("--------Error :  ------")
+        logger.error("--------Error : Dataframe could not be saved  ------")
         logger.error(f"{e}")
         raise(e)
     
-
-def punctuation(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
-    try:
-        logger.info(f" ")
-        df[column] = df[column].apply()
-        return df
-    except Exception as e:
-
-        logger.error("--------Error :  ------")
-        logger.error(f"{e}")
-        raise(e)
-    
-
-def punctuation(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
-    try:
-        logger.info(f" ")
-        df[column] = df[column].apply()
-        return df
-    except Exception as e:
-
-        logger.error("--------Error :  ------")
-        logger.error(f"{e}")
-        raise(e)
-    
-
-def punctuation(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
-    try:
-        logger.info(f" ")
-        df[column] = df[column].apply()
-        return df
-    except Exception as e:
-
-        logger.error("--------Error :  ------")
-        logger.error(f"{e}")
-        raise(e)
-    
-
-def punctuation(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
-    try:
-        logger.info(f" ")
-        df[column] = df[column].apply()
-        return df
-    except Exception as e:
-
-        logger.error("--------Error :  ------")
-        logger.error(f"{e}")
-        raise(e)
-    
-
-def punctuation(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
-    try:
-        logger.info(f" ")
-        df[column] = df[column].apply()
-        return df
-    except Exception as e:
-
-        logger.error("--------Error :  ------")
-        logger.error(f"{e}")
-        raise(e)
