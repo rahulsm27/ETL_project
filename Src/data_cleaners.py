@@ -15,6 +15,7 @@ from utils.logger import get_logger
 from pathlib import Path
 
 nltk.download('stopwords')
+dask.config.set({'logging.distributed': 'error'})
 
 
 from symspellpy import SymSpell, Verbosity
@@ -24,11 +25,13 @@ sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
 dictionary_path = pkg_resources.resource_filename(
     "symspellpy", "frequency_dictionary_en_82_765.txt"
 )
-
 sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
 
 
 logger = get_logger(Path(__file__).name)
+
+
+
 
 # Step 1
 def download_kaggle(download_api:str, zip_filename:str, dir:str) -> None:
@@ -53,6 +56,9 @@ def download_kaggle(download_api:str, zip_filename:str, dir:str) -> None:
         logger.error(f"{e}")
         raise(e)
 
+
+
+
 # Step 2
 def initialize_dd(file_path:str) -> dd.core.DataFrame:
     try:
@@ -66,8 +72,12 @@ def initialize_dd(file_path:str) -> dd.core.DataFrame:
         logger.error(f"{e}")
         raise(e)
 
+
+
+
+
 # Step 3    
-def lower_dd(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
+def lower_dd(df:dd.core.DataFrame, column : str ) -> None :
     try:
         logger.info(f" Applying lower case function to the dask dataframe")
         df[column] = df[column].apply(lambda text : text.lower(), meta=pd.Series(dtype=str))
@@ -87,7 +97,7 @@ def lower_dd(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
 
 # Step 4
 
-def rem_punc(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
+def rem_punc(df:dd.core.DataFrame, column : str ) -> None :
     try:
         logger.info(f" Removing punctuations from the dask dataframe")
         df[column] = df[column].apply(lambda x:x.translate(str.maketrans("","", string.punctuation)),meta=pd.Series(dtype=str))
@@ -98,9 +108,12 @@ def rem_punc(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
         logger.error("--------Error :  Error in removing punctuation ------")
         logger.error(f"{e}")
         raise(e)
-    
+
+
+
+
 # Step 5
-def rem_url(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
+def rem_url(df:dd.core.DataFrame, column : str ) -> None :
     try:
         logger.info(f"Removing html and url tags from the word ")
        
@@ -121,8 +134,12 @@ def url_clean(text):
 
     return text
 
+
+
+
+
 #Step 6
-def rem_stop_words(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
+def rem_stop_words(df:dd.core.DataFrame, column : str ) -> None  :
     try:
         logger.info(f"Removing stop words ")
         
@@ -139,20 +156,19 @@ def filter_stop_words(text):
    
     pattern = re.compile(r'\b(' + r'|'.join(stopwords.words('english')) + r')\b\s*')
     text = pattern.sub('', text)
-    # stop_words = set(stopwords.words('english'))
-    # filtered_sent = []
-    # for w in text:
-    #     if w not in stop_words:
-    #         filtered_sent.append(w)
 
     return text
              
 
+
+
+
+
 # Step 7
-def rem_emojis(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
+def rem_emojis(df:dd.core.DataFrame, column : str ) -> None :
     try:
         logger.info(f"Remvoing emojis ")
-        df[column] = df[column].apply(lambda x : emoji.demojize(x),meta=pd.Series(dtype=str))
+        df[column] = df[column].apply(remove_emojis_manually,meta=pd.Series(dtype=str))#lambda x : emoji.demojize(x),meta=pd.Series(dtype=str))
         df.compute()
       #  return df
     except Exception as e:
@@ -162,26 +178,33 @@ def rem_emojis(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
         raise(e)
     
 
- 
+def remove_emojis_manually(text):
+    emoji_pattern = re.compile("["
+                               u"\U0001F600-\U0001F64F"  # emoticons
+                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                               u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                               u"\U0001F700-\U0001F77F"  # alchemical symbols
+                               u"\U0001F780-\U0001F7FF"  # Geometric Shapes Extended
+                               u"\U0001F800-\U0001F8FF"  # Supplemental Arrows-C
+                               u"\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
+                               u"\U0001FA00-\U0001FA6F"  # Chess Symbols
+                               u"\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
+                               u"\U00002702-\U000027B0"  # Dingbats
+                               u"\U000024C2-\U0001F251" 
+                               "]+", flags=re.UNICODE)
+    clean_text = emoji_pattern.sub(r'', text)
+    return clean_text 
+
+    
+
+
+
 
 # Step 8
-# def rem_abbrev(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
-#     try:
-#         logger.info(f" ")
-#         df[column] = df[column].apply()
-
-#         return df
-#     except Exception as e:
-
-#         logger.error("--------Error :  ------")
-#         logger.error(f"{e}")
-#         raise(e)
-    
-# Step 9
-def spell(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
+def spell(df:dd.core.DataFrame, column : str ) -> None :
     try:
         logger.info(f" Correcting mis-spelled words ")
-        df[column] = df[column].apply(lambda x : sym_spell.word_segmentation(x).corrected_string,meta=pd.Series(dtype=str))
+        df[column] = df[column].apply(lambda x : sym_spell.word_segmentation(x).corrected_string if x !='' else x ,meta=pd.Series(dtype=str))
         df.compute()
       #  return df
     except Exception as e:
@@ -189,8 +212,12 @@ def spell(df:dd.core.DataFrame, column : str ) -> dd.core.DataFrame :
         logger.error("--------Error :  Error in spell correction ------")
         logger.error(f"{e}")
         raise(e)
-    
-# Step 10
+
+
+
+
+
+# Step 9
 def save_processed_df(df:dd.core.DataFrame, processed_file_name:str,dir:str,column :str) -> None :
     try:
         logger.info(f"Printing first 10 records of processed data")

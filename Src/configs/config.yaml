@@ -1,6 +1,6 @@
 pre_process :
   dask_cluster :
-    available: True
+    available: False
     n_workers : 2
     memory_limit : 2GiB
   download_api : kaggle datasets download -d thoughtvector/customer-support-on-twitter

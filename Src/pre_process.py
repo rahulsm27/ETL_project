@@ -5,15 +5,17 @@ from pathlib import Path
 import data_cleaners
 import os
 import re
+import dask
 from dask.distributed import LocalCluster
+dask.config.set({'logging.distributed': 'error'})
 
 @hydra.main(config_path = "configs", config_name ='config',version_base = None)
 def main(config : DictConfig,)-> None:
 
-    # Intializing logger
+# Intializing logger
     logger = get_logger(Path(__file__).name)
 
-    # use dask cluster if availabe (Optional. Default is false)
+# use dask cluster if availabe (Optional. Default is false)
     if config.pre_process.dask_cluster.available:
         try :
             logger.info(" -----Initiate : Dask Cluster -----")
@@ -32,7 +34,8 @@ def main(config : DictConfig,)-> None:
 
 
 
-    # Step 2 Initializing dataframe: 
+
+# Step 2 Initializing dataframe: 
     try:
         logger.info("--------Initiate : Initializing Dataframe --------")
         df = data_cleaners.initialize_dd(config.pre_process.file_data_path)
@@ -45,10 +48,7 @@ def main(config : DictConfig,)-> None:
 
 
 
-
-
-
-  # Step 3 Making all text as lower: 
+# Step 3 Making all text as lower: 
 
     try:
         logger.info("--------Initiate : Formating to lower case --------")
@@ -60,7 +60,9 @@ def main(config : DictConfig,)-> None:
         logger.info ("---------------------------------------------------------")
 
 
-    # Step 4 Removing Special characters & Punctuation
+
+
+# Step 4 Removing Special characters & Punctuation
         
     try:
         logger.info("--------Initiate : Removing Special characters & Punctuation --------")
@@ -70,8 +72,11 @@ def main(config : DictConfig,)-> None:
     else:
         logger.info ("-------- Success : Removed Special characters & Punctuation --------")
         logger.info ("---------------------------------------------------------")
-        
-    # Step 5 Removing url tags
+
+
+
+
+# Step 5 Removing url tags
     try:
         logger.info("--------Initiate : Removing url tags --------")
         data_cleaners.rem_url(df,config.pre_process.text_column)
@@ -82,7 +87,9 @@ def main(config : DictConfig,)-> None:
         logger.info ("---------------------------------------------------------")
                 
 
-    # Step 6 Removing stop words
+
+
+# Step 6 Removing stop words
     try:
         logger.info("--------Initiate : Removing stop words  --------")
         data_cleaners.rem_stop_words(df,config.pre_process.text_column)
@@ -92,7 +99,11 @@ def main(config : DictConfig,)-> None:
         logger.info ("-------- Success : Removed stop words --------")
         logger.info ("---------------------------------------------------------")
                 
-    # Step 7 Removing emojis
+
+
+
+
+# Step 7 Removing emojis
     try:
         logger.info("--------Initiate : Removing emojis --------")
         data_cleaners.rem_emojis(df,config.pre_process.text_column)
@@ -102,7 +113,11 @@ def main(config : DictConfig,)-> None:
         logger.info ("-------- Success : Removed emojis --------")
         logger.info ("---------------------------------------------------------")
 
-    # Step 9 Correcting spelling mistake
+
+
+
+
+# Step 8 Correcting spelling mistake
     try:
         logger.info("--------Initiate :  Correcting spelling mistake --------")
         data_cleaners.spell(df,config.pre_process.text_column)
@@ -112,7 +127,10 @@ def main(config : DictConfig,)-> None:
         logger.info ("-------- Success : Corrected spelling mistake --------")
         logger.info ("---------------------------------------------------------")
 
-# Step 10 Storing Processed dataframe
+
+
+
+# Step 9 Storing Processed dataframe
     try:
         logger.info("--------Initiate :  Saving Processed dataframe --------")
         data_cleaners.save_processed_df(df, config.pre_process.processed_file_name, config.pre_process.dir ,config.pre_process.text_column)

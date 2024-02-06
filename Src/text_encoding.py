@@ -2,7 +2,7 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 from utils.logger import get_logger
 from pathlib import Path
-import data_cleaners
+import data_encoders
 import os
 import re
 from dask.distributed import LocalCluster
@@ -40,7 +40,7 @@ def main(config : DictConfig,)-> None:
 
     try:
         logger.info("--------Initiate : Initializing Dataframe --------")
-        df = data_cleaners.initialize_dd(config.data_encoding.processed_file_path)
+        df = data_encoders.initialize_dd(config.data_encoding.processed_file_path)
     except Exception as e:
         raise(e)
     else:
@@ -55,7 +55,7 @@ def main(config : DictConfig,)-> None:
 
     try:
         logger.info("--------Initiate : Formating to lower case --------")
-        data_cleaners.make_ohe(df,config.pre_process.text_column)
+        data_encoders.make_ohe(df,config.pre_process.text_column)
     except Exception as e:
         raise(e)
     else:
@@ -66,7 +66,7 @@ def main(config : DictConfig,)-> None:
     # Step 2 N gram Encoding 
     try:
         logger.info("--------Initiate : Making N-Gram(2) Vectors --------")
-        data_cleaners.make_ngram(df,config.pre_process.text_column)
+        data_encoders.make_ngram(df,config.pre_process.text_column)
     except Exception as e:
         raise(e)
     else:
@@ -76,7 +76,7 @@ def main(config : DictConfig,)-> None:
     # Step 3 TFIDF
     try:
         logger.info("--------Initiate : Making TFIDF vectors --------")
-        data_cleaners.make_tfidf(df,config.pre_process.text_column)
+        data_encoders.make_tfidf(df,config.pre_process.text_column)
     except Exception as e:
         raise(e)
     else:
