@@ -5,7 +5,11 @@ import zipfile
 import os
 import string
 import nltk
+import re
+import emoji
+
 from nltk.corpus import stopwords
+from textblob import TextBlob
 
 from utils.logger import get_logger
 from pathlib import Path
@@ -72,7 +76,7 @@ def lower_dd(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
 def rem_punc(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
     try:
         logger.info(f" Removing punctuations from the dask dataframe")
-        df[column] = df[column].apply(out = s.translate(string.maketrans("",""), string.punctuation))
+        df[column] = df[column].apply(lambda x:x.translate(string.maketrans("",""), string.punctuation))
         return df
     except Exception as e:
 
@@ -83,14 +87,23 @@ def rem_punc(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
 # Step 5
 def rem_url(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
     try:
-        logger.info(f"Remv ")
-        df[column] = df[column].apply()
+        logger.info(f"Removing html and url tags from the word ")
+       
+        df[column] = df[column].apply(url_clean)
         return df
     except Exception as e:
 
-        logger.error("--------Error :  ------")
+        logger.error("--------Error : Error in removing html and url tags  ------")
         logger.error(f"{e}")
         raise(e)
+
+def url_clean(text):
+    pattern1 =re.compile(r'https?://\S+|www\.\S+')
+    pattern2 = re.compile("<.*>")
+    pattern1.sub("",text)
+    pattern2.sub("",text)
+
+    return text
 
 #Step 6
 def rem_stop_words(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
@@ -118,7 +131,7 @@ def filter_stop_words(text):
 def rem_emojis(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
     try:
         logger.info(f"Remvoing emojis ")
-        df[column] = df[column].apply()
+        df[column] = df[column].apply(remove_emoji)
         return df
     except Exception as e:
 
@@ -126,25 +139,28 @@ def rem_emojis(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
         logger.error(f"{e}")
         raise(e)
     
+def remove_emoji(text):
+    clean_text=emoji.demojize(text)
+    return clean_text
 
 # Step 8
-def rem_abbrev(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
-    try:
-        logger.info(f" ")
-        df[column] = df[column].apply()
+# def rem_abbrev(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
+#     try:
+#         logger.info(f" ")
+#         df[column] = df[column].apply()
 
-        return df
-    except Exception as e:
+#         return df
+#     except Exception as e:
 
-        logger.error("--------Error :  ------")
-        logger.error(f"{e}")
-        raise(e)
+#         logger.error("--------Error :  ------")
+#         logger.error(f"{e}")
+#         raise(e)
     
 # Step 9
 def spell(df:dd.core.dataframe, column : str ) -> dd.core.dataframe :
     try:
         logger.info(f" Correcting mis-spelled words ")
-        df[column] = df[column].apply()
+        df[column] = df[column].apply(lambda x : TextBlob(x.correct().string))
         return df
     except Exception as e:
 

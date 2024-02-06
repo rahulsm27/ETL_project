@@ -4,7 +4,7 @@ from utils.logger import get_logger
 from pathlib import Path
 import data_cleaners
 import os
-
+import re
 from dask.distributed import LocalCluster
 
 @hydra.main(config_path = "configs", config_name ='config',version_base = None)
@@ -116,15 +116,15 @@ def main(config : DictConfig,)-> None:
         logger.info ("-------- Success : Removed emojis --------")
         logger.info ("---------------------------------------------------------")
         
-    # Step 8 Checking for abbreviations
-    try:
-        logger.info("--------Initiate : Checking for abbreviations  --------")
-        df = data_cleaners.rem_abbrev(df,config.pre_process.text_column)
-    except Exception as e:
-        raise(e)
-    else:
-        logger.info ("-------- Success : Corrected abbreviations --------")
-        logger.info ("---------------------------------------------------------")
+    # # Step 8 Checking for abbreviations
+    # try:
+    #     logger.info("--------Initiate : Checking for abbreviations  --------")
+    #     df = data_cleaners.rem_abbrev(df,config.pre_process.text_column)
+    # except Exception as e:
+    #     raise(e)
+    # else:
+    #     logger.info ("-------- Success : Corrected abbreviations --------")
+    #     logger.info ("---------------------------------------------------------")
         
     # Step 9 Correcting spelling mistake
     try:
