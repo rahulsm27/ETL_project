@@ -17,7 +17,7 @@ data_encoding:
     memory_limit : 2GiB
   processed_file_path : ./data/processed/
   start_df : 1
-  end_df : 4
+  end_df : 400
  
 defaults:  
   - override hydra/job_logging: None
