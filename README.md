@@ -31,14 +31,18 @@ Dataset url -> (https://www.kaggle.com/datasets/thoughtvector/customer-support-o
 12. This should ideally be run on a dask cluster. One can set up a dask cluster in a kubeflow pipeline on top of a Kubernetes cluster. The code can be run as part of the kubeflow pipeline. Please refer github link for details of setting up a kubeflow pipeline in Kubernetes
 https://github.com/rahulsm27/Final_Project
 
-## Task 2 : Data Encoding (WIP)
+## Task 2 : Data Encoding 
 
 
-In this task we will be encoding the preprocessed data
+In this task we will be encoding the preprocessed data. Two simple types of encoding is done. One is CountVectorizer and Other is TFIDF vectorizer.
 
 1. First task 1 should be completed to run task 2
-2. For running task 2 execute 'python src/text_encoding.py' from the directory containing the readme file
-3. This is WIP. Will update soon
+2. For running task 2 execute 'python src/text_encoding.py' from the directory containing the readme file. 'data_encoding.py' contains some function which are utilized by 'text_encoding.py' file
+3. This will read the parquet file generated in step 1.
+4. Provide the index of text column for which encoding vectors has to be generated. The index has to be provided in the config file
+5. This is to mimic the data loader object of transformer. In practicle situation we will be generating batches of vector as we process the data.
+6. The code can be adapter to work as dataloader by writer a wrapper function.
+
 
 To understand how transformer has revolutionized sentence encoding please check article -> https://www.geeksforgeeks.org/different-techniques-for-sentence-semantic-similarity-in-nlp/
 

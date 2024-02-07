@@ -6,17 +6,19 @@ pre_process :
   download_api : kaggle datasets download -d thoughtvector/customer-support-on-twitter
   zip_filename : customer-support-on-twitter.zip
   dir : ./data
-  file_data_path: ./data/twcs/twcs.csv
+  file_data_path: ./data/twcs/twcs2.csv
   text_column : text
   processed_file_name : processed
 
 data_encoding:
   dask_cluster :
-    available: True
+    available: False
     n_workers : 2
     memory_limit : 2GiB
-  processed_file_path : ./data/processed
-
+  processed_file_path : ./data/processed/
+  start_df : 1
+  end_df : 4
+ 
 defaults:  
   - override hydra/job_logging: None
   - override hydra/hydra_logging: None
