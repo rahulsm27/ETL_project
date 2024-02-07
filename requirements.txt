@@ -7,3 +7,4 @@ emoji
 textblob
 pyarrow==14.0.1
 symspellpy
+scikit-learn

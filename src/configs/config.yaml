@@ -6,7 +6,7 @@ pre_process :
   download_api : kaggle datasets download -d thoughtvector/customer-support-on-twitter
   zip_filename : customer-support-on-twitter.zip
   dir : ./data
-  file_data_path: ./data/twcs/twcs2.csv
+  file_data_path: ./data/twcs/twcs.csv
   text_column : text
   processed_file_name : processed
 

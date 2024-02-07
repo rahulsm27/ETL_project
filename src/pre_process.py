@@ -116,16 +116,16 @@ def main(config : DictConfig,)-> None:
 
 
 
-
+#Spellcheck consumes a lot of memory and takes lot of time. Use below functionality only if dataset is small or you have processing power
 # Step 8 Correcting spelling mistake
-    try:
-        logger.info("--------Initiate :  Correcting spelling mistake --------")
-        data_cleaners.spell(df,config.pre_process.text_column)
-    except Exception as e:
-        raise(e)
-    else:
-        logger.info ("-------- Success : Corrected spelling mistake --------")
-        logger.info ("---------------------------------------------------------")
+    # try:
+    #     logger.info("--------Initiate :  Correcting spelling mistake --------")
+    #     data_cleaners.spell(df,config.pre_process.text_column)
+    # except Exception as e:
+    #     raise(e)
+    # else:
+    #     logger.info ("-------- Success : Corrected spelling mistake --------")
+    #     logger.info ("---------------------------------------------------------")
 
 
 
