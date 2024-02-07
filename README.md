@@ -1,8 +1,8 @@
 # Data Preprocessing Project
-This repo applies common cleaning techniques for preprocessing the text on below dataset. The challenging part it that the dataaset is huge( alomost 3 Million recoreds). How to process such huge dataset. I have used dask datafrome to speed up processing. It takes around 30 to 40 min to preprocess the data on macbook.  If a dask cluster on kubernetes is available then the processing can be speed up. 
+This repo applies common cleaning techniques for preprocessing the text on below dataset. The challenging part it that the dataaset is huge( alomost 3 Million recoreds). How to process such huge dataset? I have used dask datafrome to speed up processing. It takes around 30 to 40 min to preprocess the data on 8GB Ram laptop( 'remove stop words' and 'remove emoji' takes the maximum time for preprocessing
+).  If a dask cluster on kubernetes is available then the processing can be speed up. 
 
-Remov stop words and remove emoji takes the maximum time for preprocessing
-It is not possible to execute spell checker on local computer as for even 100000 records it could not be finished in 1 hour. So i have commented the code. Un comment if you have good processing power available
+It is not possible to execute spell checker on local computer as for even 100000 records it could not be finished in 1 hour. So i have commented the code. Uncomment if you have good processing power available.
 
 Data Preprocessing Techniques for
 Dataset url -> (https://www.kaggle.com/datasets/thoughtvector/customer-support-on-twitter/data)
