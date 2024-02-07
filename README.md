@@ -31,13 +31,14 @@ Dataset url -> (https://www.kaggle.com/datasets/thoughtvector/customer-support-o
 12. This should ideally be run on a dask cluster. One can set up a dask cluster in a kubeflow pipeline on top of a Kubernetes cluster. The code can be run as part of the kubeflow pipeline. Please refer github link for details of setting up a kubeflow pipeline in Kubernetes
 https://github.com/rahulsm27/Final_Project
 
-## Task 2 : Data Encoding
+## Task 2 : Data Encoding (WIP)
 
 
 In this task we will be encoding the preprocessed data
 
 1. First task 1 should be completed to run task 2
 2. For running task 2 execute 'python src/text_encoding.py' from the directory containing the readme file
+3. This is WIP. Will update soon
 
 To understand how transformer has revolutionized sentence encoding please check article -> https://www.geeksforgeeks.org/different-techniques-for-sentence-semantic-similarity-in-nlp/
 
