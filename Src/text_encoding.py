@@ -51,16 +51,16 @@ def main(config : DictConfig,)-> None:
 
 
 
-  # Step 2 Making OHE : 
+#   # Step 2 Making OHE : 
 
-    try:
-        logger.info("--------Initiate : Formating to lower case --------")
-        data_encoders.make_ohe(df,config.pre_process.text_column)
-    except Exception as e:
-        raise(e)
-    else:
-        logger.info ("-------- Success : Text formated to lower case  --------")
-        logger.info ("---------------------------------------------------------")
+#     try:
+#         logger.info("--------Initiate : Making OHE --------")
+#         data_encoders.make_ohe(df,config.pre_process.text_column)
+#     except Exception as e:
+#         raise(e)
+#     else:
+#         logger.info ("-------- Success : Text converted to OHE  --------")
+#         logger.info ("---------------------------------------------------------")
 
 
     # Step 2 N gram Encoding 
