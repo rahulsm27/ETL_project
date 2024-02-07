@@ -47,9 +47,9 @@ In this task we will be encoding the preprocessed data. Two simple types of enco
 To understand how transformer has revolutionized sentence encoding please check article -> https://www.geeksforgeeks.org/different-techniques-for-sentence-semantic-similarity-in-nlp/
 
 
-## Task 3 : Answer to Question
+## Step 3 : OHE vs N-GRAM vs TFIDF
 
-Please refer 'Assignment_Question_Answer.txt" file
+Please refer 'Comparision.txt" file to know about difference between OHE, N-gram and TFIDF
 
 # Docker commands
 1. Pull base image(to be used if image not available) : docker pull python:3.10-slim # if image not available
