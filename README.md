@@ -1,5 +1,5 @@
 # Data Preprocessing Project
-This repo applies common cleaning techniques for preprocessing the text on below dataset. The challenging part it that the dataset is huge(almost 3 Million records). How to process such a huge dataset? I have used dask datafro\ame to speed up processing. It takes around 30 to 40 min to preprocess the data on 8GB Ram laptop( 'remove stop words' and 'remove emoji' take the maximum time for preprocessing
+This repo applies common cleaning techniques for preprocessing the text on below dataset. The challenging part it that the dataset is huge(almost 3 Million records). How to process such a huge dataset? I have used dask dataframe to speed up processing. It takes around 30 to 40 min to preprocess the data on 8GB Ram laptop( 'remove stop words' and 'remove emoji' take the maximum time for preprocessing
 ). If a dask cluster on Kubernetes is available then the processing can be speeded up.
 
 It is not possible to execute spell checker on the local computer as for even 100000 records it could not be finished in 1 hour. So i have commented the code. Uncomment if you have good processing power available.
